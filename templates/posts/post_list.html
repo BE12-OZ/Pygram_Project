@@ -6,6 +6,9 @@
 <div class="row">
     <div class="col-md-8 offset-md-2">
         <a href="{% url 'post_create' %}" class="btn btn-primary my-3">Create Post</a>
+        {% if tag %}
+            <h2>Posts tagged with "{{ tag }}"</h2>
+        {% endif %}
         <div id="post-list-container">
             {% include 'posts/_post_list.html' %}
         </div>
