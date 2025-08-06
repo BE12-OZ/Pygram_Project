@@ -26,6 +26,7 @@ urlpatterns = [
     path('search/', posts_views.search, name='search'),
     path('posts/', include('posts.urls')),
     path('', posts_views.post_list, name='home'),
+    path('accounts/', include('allauth.urls')),
 ]
 
 if settings.DEBUG:
