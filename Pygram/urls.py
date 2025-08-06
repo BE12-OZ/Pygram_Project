@@ -18,11 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from posts import views as posts_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
-    path('', include('posts.urls')),
+    path('search/', posts_views.search, name='search'),
+    path('posts/', include('posts.urls')),
+    path('', posts_views.post_list, name='home'),
 ]
 
 if settings.DEBUG:

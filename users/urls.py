@@ -20,4 +20,8 @@ urlpatterns = [
     path('reset/done/',
          auth_views.PasswordResetCompleteView.as_view(template_name='users/password_reset_complete.html'),
          name='password_reset_complete'),
+    path('<str:username>/', views.profile, name='profile'),
+    path('<str:username>/toggle_follow/', views.toggle_follow, name='toggle_follow'),
+    path('<str:username>/followers/', views.follower_list, name='follower_list'),
+    path('<str:username>/following/', views.following_list, name='following_list'),
 ]

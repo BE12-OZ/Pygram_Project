@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Results for "{{ query }}"{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2>Search Results for "{{ query }}"</h2>
+        <hr>
+
+        <div class="search-results">
+            <div class="users-results">
+                <h4>Users</h4>
+                {% if users %}
+                    <ul class="list-group">
+                        {% for user in users %}
+                            <li class="list-group-item">
+                                <a href="{% url 'profile' user.username %}">{{ user.username }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No users found.</p>
+                {% endif %}
+            </div>
+
+            <hr>
+
+            <div class="tags-results">
+                <h4>Tags</h4>
+                {% if tags %}
+                    <ul class="list-group">
+                        {% for tag in tags %}
+                            <li class="list-group-item">
+                                <a href="{% url 'post_list_by_tag' tag.name %}">#{{ tag.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No tags found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -5,6 +5,7 @@ from .forms import PostForm, CommentForm
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.template.loader import render_to_string
+from users.models import User
 
 @login_required
 def post_list(request, tag_name=None):
@@ -122,3 +123,19 @@ def delete_comment(request, pk):
         comment.delete()
         return redirect('post_list')
     return redirect('post_list')
+
+def search(request):
+    query = request.GET.get('q')
+    if query:
+        users = User.objects.filter(username__icontains=query)
+        tags = Tag.objects.filter(name__icontains=query)
+    else:
+        users = User.objects.none()
+        tags = Tag.objects.none()
+    
+    context = {
+        'query': query,
+        'users': users,
+        'tags': tags,
+    }
+    return render(request, 'search_results.html', context)

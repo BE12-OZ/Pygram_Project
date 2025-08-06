@@ -83,7 +83,8 @@
                 .then(response => response.json())
                 .then(data => {
                     const likeButton = document.querySelector(`.like-button[data-post-id="${postId}"]`);
-                    const likesCount = likeButton.nextElementSibling;
+                    const postCard = likeButton.closest('.card');
+                    const likesCount = postCard.querySelector('.likes-count');
 
                     if (data.liked) {
                         likeButton.textContent = 'Unlike';

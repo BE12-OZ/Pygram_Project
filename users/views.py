@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import SignupForm
 from .models import User
 from django.contrib.sites.shortcuts import get_current_site
@@ -7,6 +7,9 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
+from posts.models import Post
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 
 def signup(request):
@@ -61,3 +64,51 @@ def find_username(request):
             username = None
         return render(request, 'users/find_username_result.html', {'username': username})
     return render(request, 'users/find_username_form.html')
+
+def profile(request, username):
+    profile_user = get_object_or_404(User, username=username)
+    posts = Post.objects.filter(author=profile_user).order_by('-created_at')
+    is_following = request.user.is_authenticated and request.user.following.filter(pk=profile_user.pk).exists()
+    context = {
+        'profile_user': profile_user,
+        'posts': posts,
+        'is_following': is_following,
+    }
+    return render(request, 'users/profile.html', context)
+
+@login_required
+def toggle_follow(request, username):
+    if request.method == 'POST':
+        target_user = get_object_or_404(User, username=username)
+        if request.user == target_user:
+            return JsonResponse({'status': 'error', 'message': 'You cannot follow yourself.'}, status=400)
+
+        if request.user.following.filter(pk=target_user.pk).exists():
+            request.user.following.remove(target_user)
+            followed = False
+        else:
+            request.user.following.add(target_user)
+            followed = True
+        
+        return JsonResponse({'status': 'success', 'followed': followed, 'followers_count': target_user.followers.count()})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request.'}, status=400)
+
+def follower_list(request, username):
+    user = get_object_or_404(User, username=username)
+    followers = user.followers.all()
+    context = {
+        'profile_user': user,
+        'users': followers,
+        'title': 'Followers'
+    }
+    return render(request, 'users/follow_list.html', context)
+
+def following_list(request, username):
+    user = get_object_or_404(User, username=username)
+    following = user.following.all()
+    context = {
+        'profile_user': user,
+        'users': following,
+        'title': 'Following'
+    }
+    return render(request, 'users/follow_list.html', context)
