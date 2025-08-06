@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Post List{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <a href="{% url 'post_create' %}" class="btn btn-primary my-3">Create Post</a>
+        <div id="post-list-container">
+            {% include 'posts/_post_list.html' %}
+        </div>
+    </div>
+</div>
+
+<div id="loading" style="display: none;">
+    <p>Loading...</p>
+</div>
+
+{% if page_obj.has_next %}
+    <a id="load-more" href="?page={{ page_obj.next_page_number }}" style="display: none;">Load More</a>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let loading = false;
+        const loadingSpinner = document.getElementById('loading');
+        const postListContainer = document.getElementById('post-list-container');
+        let loadMoreLink = document.getElementById('load-more');
+
+        function loadMorePosts() {
+            if (loading || !loadMoreLink) return;
+            loading = true;
+            loadingSpinner.style.display = 'block';
+
+            fetch(loadMoreLink.href, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                postListContainer.insertAdjacentHTML('beforeend', data.html);
+                if (data.has_next) {
+                    loadMoreLink.href = `?page=${data.next_page_number}`;
+                } else {
+                    loadMoreLink.remove();
+                    loadMoreLink = null;
+                }
+                loading = false;
+                loadingSpinner.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error loading more posts:', error);
+                loading = false;
+                loadingSpinner.style.display = 'none';
+            });
+        }
+
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+                loadMorePosts();
+            }
+        });
+    });
+</script>
+{% endblock %}

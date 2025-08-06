@@ -1,0 +1,19 @@
+{% for post in posts %}
+    <div class="card my-4">
+        <div class="card-header">
+            <a href="#">{{ post.author.username }}</a>
+            {% if post.author == request.user %}
+                <a href="{% url 'post_update' post.pk %}" class="btn btn-sm btn-secondary float-end">Edit</a>
+            {% endif %}
+        </div>
+        {% if post.image %}
+            <img src="{{ post.image.url }}" class="card-img-top" alt="Post image">
+        {% endif %}
+        <div class="card-body">
+            <p class="card-text">{{ post.content }}</p>
+        </div>
+        <div class="card-footer text-muted">
+            {{ post.created_at|date:"Y-m-d H:i" }}
+        </div>
+    </div>
+{% endfor %}
