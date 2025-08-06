@@ -16,6 +16,16 @@
                     <a href="{% url 'post_list_by_tag' tag.name %}" class="badge bg-secondary text-decoration-none">#{{ tag.name }}</a>
                 {% endfor %}
             </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <button class="btn btn-sm btn-outline-primary like-button" data-post-id="{{ post.pk }}">
+                    {% if request.user in post.likes.all %}
+                        Unlike
+                    {% else %}
+                        Like
+                    {% endif %}
+                </button>
+                <span class="likes-count">{{ post.likes.count }} like{{ post.likes.count|pluralize }}</span>
+            </div>
             <div class="comments mt-3">
                 <h6>Comments</h6>
                 {% for comment in post.comments.all %}

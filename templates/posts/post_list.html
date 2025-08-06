@@ -67,6 +67,34 @@
                 loadMorePosts();
             }
         });
+
+        postListContainer.addEventListener('click', function(event) {
+            if (event.target.classList.contains('like-button')) {
+                const postId = event.target.dataset.postId;
+                const url = `/posts/${postId}/toggle_like/`;
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const likeButton = document.querySelector(`.like-button[data-post-id="${postId}"]`);
+                    const likesCount = likeButton.nextElementSibling;
+
+                    if (data.liked) {
+                        likeButton.textContent = 'Unlike';
+                    } else {
+                        likeButton.textContent = 'Like';
+                    }
+                    likesCount.textContent = `${data.likes_count} like${data.likes_count !== 1 ? 's' : ''}`;
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        });
     });
 </script>
 {% endblock %}

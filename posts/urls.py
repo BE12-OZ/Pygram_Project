@@ -8,4 +8,5 @@ urlpatterns = [
     path('tag/<str:tag_name>/', views.post_list, name='post_list_by_tag'),
     path('<int:pk>/add_comment/', views.add_comment, name='add_comment'),
     path('comment/<int:pk>/delete/', views.delete_comment, name='delete_comment'),
+    path('<int:pk>/toggle_like/', views.toggle_like, name='toggle_like'),
 ]
